@@ -6,15 +6,22 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Login from './Components/Login';
+import {
+    ChakraProvider,
+    ColorModeScript
+} from '@chakra-ui/react';
+import theme from './theme';
 
 ReactDOM.render(
     <React.StrictMode>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<App />} />
-            </Routes>
-        </BrowserRouter>
+        <ChakraProvider theme={theme}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<App />} />
+                </Routes>
+            </BrowserRouter>
+        </ChakraProvider>
     </React.StrictMode>,
     document.getElementById('root')
 );

@@ -8,25 +8,6 @@ export const PrivateRoute = ({
     bypassAuthorization = null,
     permissionKey = null
 }) => {
-    // <Route
-    //     {...rest}
-    //     element={(props) => {
-    //         if (localStorage.getItem('user')) {
-    //             return <Component {...props} />;
-    //         } else {
-    //             return (
-    //                 <Route
-    //                     path={loginPath}
-    //                     render={() => (
-    //                         <Redirect
-    //                             to={{ pathname: loginPath, state: { from: props.location } }}
-    //                         />
-    //                     )}
-    //                 />
-    //             );
-    //         }
-    //     }}
-    // />
-    let isAuthenticated = localStorage.getItem('user');
+    let isAuthenticated = !!localStorage.getItem('user') || true;
     return isAuthenticated ? children : <Navigate to={loginPath} />;
 };
