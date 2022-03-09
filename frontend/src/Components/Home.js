@@ -8,6 +8,10 @@ import {
     UserOutlined
 } from '@ant-design/icons';
 import React, { useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { PrivateRoute } from './Common/PrivateRoute';
+import Questions from './Questions';
+import Answers from './Answers';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -50,7 +54,9 @@ const Home = ({}) => {
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
                     </Breadcrumb>
                     <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
-                        Bill is a cat.
+                        <>
+                            
+                        </>
                     </div>
                 </Content>
             </Layout>
