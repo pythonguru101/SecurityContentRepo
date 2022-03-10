@@ -9,32 +9,7 @@ import Answers from './Components/Answers';
 function App() {
     return (
         <div className="App">
-            <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <PrivateRoute loginPath={'/login'}>
-                            <Home />
-                        </PrivateRoute>
-                    }>
-                    <Route
-                        path="questions"
-                        element={
-                            <PrivateRoute loginPath={'/login'}>
-                                <Questions />
-                            </PrivateRoute>
-                        }
-                    />
-                    <Route
-                        path="answers"
-                        element={
-                            <PrivateRoute loginPath={'/login'}>
-                                <Answers />
-                            </PrivateRoute>
-                        }
-                    />
-                </Route>
-            </Routes>
+            Home
         </div>
     );
 }

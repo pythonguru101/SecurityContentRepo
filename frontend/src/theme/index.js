@@ -12,6 +12,21 @@ const config = {
 };
 
 export const theme = {
+    components: {
+        Button: {
+            baseStyle: (props) => ({
+                bg: 'messenger.500',
+                _focus: {
+                    boxShadow: 'none'
+                }
+            }),
+            variants: {
+                solid: (props) => ({
+                    bg: 'messenger.500',
+                })
+            }
+        }
+    },
     direction,
     ...foundations,
     config

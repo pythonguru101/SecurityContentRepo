@@ -1,7 +1,14 @@
 from django.urls import path 
-from .views import  get_categories, get_users
+from . import  views
  
 urlpatterns = [ 
-    path('categories', get_categories, name='get_categories_list'),
-    path('users', get_users, name='get_users')
+    path(r'categories', views.get_categories, name='categories'),
+    path(r'category/<int:pk>', views.category, name='category'),
+    path(r'category', views.create_category, name='create_category'),
+    path(r'questions', views.get_questions , name='questions'),
+    path(r'question/<int:pk>', views.question, name='question'),
+    path(r'create_question', views.create_question, name='create_question'),    
+    path(r'answers', views.get_answers , name='answers'),
+    path(r'answer/<int:pk>', views.answer, name='answer'),
+    path(r'create_answer', views.create_answer, name='create_answer'),
 ]

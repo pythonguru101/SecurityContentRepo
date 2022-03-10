@@ -6,11 +6,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Login from './Components/Login';
-import {
-    ChakraProvider,
-    ColorModeScript
-} from '@chakra-ui/react';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import theme from './theme';
+import { PrivateRoute } from './Components/Common/PrivateRoute';
+import Home from './Components/Home';
+import Questions from './Components/Questions';
+import Answers from './Components/Answers';
 
 ReactDOM.render(
     <React.StrictMode>
@@ -18,7 +19,38 @@ ReactDOM.render(
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<Login />} />
-                    <Route path="/" element={<App />} />
+                    <Route
+                        path="/*"
+                        element={
+                            <PrivateRoute loginPath={'/login'}>
+                                <Home />
+                            </PrivateRoute>
+                        }>
+                        <Route
+                            index
+                            element={
+                                <PrivateRoute loginPath={'/login'}>
+                                    <App />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="questions"
+                            element={
+                                <PrivateRoute loginPath={'/login'}>
+                                    <Questions />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="answers"
+                            element={
+                                <PrivateRoute loginPath={'/login'}>
+                                    <Answers />
+                                </PrivateRoute>
+                            }
+                        />
+                    </Route>
                 </Routes>
             </BrowserRouter>
         </ChakraProvider>
