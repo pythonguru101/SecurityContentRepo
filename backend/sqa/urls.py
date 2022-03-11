@@ -11,4 +11,7 @@ urlpatterns = [
     path(r'answers', views.get_answers , name='answers'),
     path(r'answer/<int:pk>', views.answer, name='answer'),
     path(r'create_answer', views.create_answer, name='create_answer'),
+    path(r'tenants', views.get_tenants , name='tenants'),
+    path(r'tenant/<int:pk>', views.tenant, name='tenant'),
+    path(r'create_tenant', views.create_tenant, name='create_tenant'),
 ]

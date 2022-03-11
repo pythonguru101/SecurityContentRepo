@@ -12,6 +12,10 @@ import { PrivateRoute } from './Components/Common/PrivateRoute';
 import Home from './Components/Home';
 import Questions from './Components/Questions';
 import Answers from './Components/Answers';
+import { setupInterceptorsTo } from './Services/Interceptors';
+import axios from 'axios';
+
+setupInterceptorsTo(axios);
 
 ReactDOM.render(
     <React.StrictMode>
