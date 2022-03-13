@@ -1,6 +1,6 @@
 const onRequest = (config) => {
     let userInfo = JSON.parse(localStorage.getItem('user'));
-    if (userInfo && userInfo.accessToken) {
+    if (userInfo && userInfo.access) {
         config.headers['authorization'] = `Bearer ${userInfo.access}`;
     }
     return config;

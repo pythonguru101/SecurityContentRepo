@@ -62,7 +62,10 @@ const Home = ({}) => {
                     <SubMenu key="sub1" icon={<UserOutlined />} title="User">
                         <Menu.Item key="3">Profile</Menu.Item>
                         <Menu.Item key="4">Settings</Menu.Item>
-                        <Menu.Item key="5">Logout</Menu.Item>
+                        <Menu.Item key="5" onClick={()=> {
+                             localStorage.removeItem('user');
+                             navigate('/login');
+                        }}>Logout</Menu.Item>
                     </SubMenu>
                 </Menu>
             </Sider>

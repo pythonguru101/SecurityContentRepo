@@ -8,6 +8,6 @@ export const PrivateRoute = ({
     bypassAuthorization = null,
     permissionKey = null
 }) => {
-    let isAuthenticated = !!localStorage.getItem('user') || true;
+    let isAuthenticated = !!localStorage.getItem('user');
     return isAuthenticated ? children : <Navigate to={loginPath} />;
 };

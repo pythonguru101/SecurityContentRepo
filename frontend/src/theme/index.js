@@ -15,7 +15,6 @@ export const theme = {
     components: {
         Button: {
             baseStyle: (props) => ({
-                bg: 'messenger.500',
                 _focus: {
                     boxShadow: 'none'
                 }
