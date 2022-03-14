@@ -1,12 +1,12 @@
-from datetime import datetime
+
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from django.http.response import JsonResponse
-from rest_framework.parsers import JSONParser 
+from django.http.response import JsonResponse 
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated,AllowAny
-from .models import Category, Question, Answer, Tenant
+from .models import Category, Question, Answer, Tenant,TenantUserMapping
 from .serializers import (BasicUserSerializer,
                           CategorySerializer, 
                           QuestionCreateSerializer, 
@@ -14,6 +14,8 @@ from .serializers import (BasicUserSerializer,
                           AnswerSerializer, 
                           AnswerCreateSerializer, 
                           TenantCreateSerializer,
+                          TenantUserSerializer,
+                          UserCreateSerializer,
                           TenantSerializer)
 
 
@@ -24,18 +26,31 @@ def current_user(request):
     serializer = BasicUserSerializer(request.user)
     return JsonResponse(serializer.data, safe=False)
 
+@swagger_auto_schema(method='post', operation_description='Create question category', request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             required=['username','email','password','first_name','last_name'],
+                             properties={
+                                 'username': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'email': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'password': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'first_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'last_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'tenant': openapi.Schema(type=openapi.TYPE_INTEGER)
+                             },
+                         ))
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_user(request):
-    user_data = JSONParser().parse(request)
-    for key, value in user_data.items():
-        print(key, ' : ', value)
+    user_data = request.data
     user = User.objects.create_user(user_data['username'], user_data['email'], user_data['password'])
     user.first_name = user_data['first_name']
     user.last_name = user_data['last_name']
     user.save()
-    user_serializer = BasicUserSerializer(user, many=False)
-    return JsonResponse(user_serializer.data, safe=False)
+    tenant = Tenant.objects.get(pk=user_data['tenant'])
+    mapping = TenantUserMapping(user=user, tenant=tenant)
+    mapping.save();
+    mapping_serializer = TenantUserSerializer(mapping, many=False)
+    return JsonResponse(mapping_serializer.data, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -58,7 +73,7 @@ def category(request, pk):
         category.delete()
         return JsonResponse({'message': 'Category is deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
     elif request.method == 'PUT':
-        category_data = JSONParser().parse(request)
+        category_data = request.data
         category_serializer = CategorySerializer(category, data=category_data)
         if category_serializer.is_valid():
             inserted = category_serializer.save()
@@ -72,8 +87,7 @@ def category(request, pk):
 @permission_classes([IsAuthenticated])
 def create_category(request):
     user = request.user;
-    category_data = JSONParser().parse(request)
-    category_data.upsert_by=user.id
+    category_data = request.data
     category_serializer = CategorySerializer(data=category_data)
     if category_serializer.is_valid():
         inserted = category_serializer.save()
@@ -112,7 +126,7 @@ def question(request, pk):
             question.delete()
             return JsonResponse({'message': 'The question is deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
         elif request.method == 'PUT':
-            question_data = JSONParser().parse(request)
+            question_data = request.data
             question_serializer = QuestionCreateSerializer(question, data=question_data)
             if question_serializer.is_valid():
                 inserted = question_serializer.save()
@@ -127,11 +141,13 @@ def question(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_question(request):
-    question_data = JSONParser().parse(request)
+    question_data = request.data
+    tenant = TenantUserMapping.objects.filter(user_id=request.user.id).first()
     question_serializer = QuestionCreateSerializer(data=question_data)
     if question_serializer.is_valid():
         inserted = question_serializer.save()
         inserted.upsert_by = request.user.id
+        inserted.tenant_id = tenant.tenant_id
         inserted.save()
         return JsonResponse(question_serializer.data, safe=False)
     return JsonResponse(question_serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
@@ -168,7 +184,7 @@ def answer(request, pk):
             answer.delete()
             return JsonResponse({'message': 'Answer is deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
         elif request.method == 'PUT':
-            answer_data = JSONParser().parse(request)
+            answer_data = request.data
             answer_serializer = AnswerCreateSerializer(answer, data=answer_data)
             if answer_serializer.is_valid():
                 inserted = answer_serializer.save()
@@ -183,7 +199,7 @@ def answer(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_answer(request):
-    answer_data = JSONParser().parse(request)
+    answer_data = request.data
     answer_serializer = AnswerCreateSerializer(data=answer_data)
     if answer_serializer.is_valid():
         inserted = answer_serializer.save()
@@ -226,7 +242,7 @@ def tenant(request, pk):
         tenant.delete()
         return JsonResponse({'message': 'Tenant is deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
     elif request.method == 'PUT':
-        tenant_data = JSONParser().parse(request)
+        tenant_data = request.data
         tenant_serializer = TenantSerializer(tenant, data=tenant_data)
         if tenant_serializer.is_valid():
             inserted = tenant_serializer.save()
@@ -239,7 +255,7 @@ def tenant(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_tenant(request):
-    tenant_data = JSONParser().parse(request)
+    tenant_data = request.data
     tenant_serializer = TenantCreateSerializer(data=tenant_data)
     if tenant_serializer.is_valid():        
         inserted = tenant_serializer.save()        

@@ -1,13 +1,9 @@
 //@ts-check
 import { Layout, Menu } from 'antd';
-import {
-    HomeOutlined,
-    UserOutlined,
-    QuestionCircleOutlined
-} from '@ant-design/icons';
+import { HomeOutlined, UserOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -35,7 +31,9 @@ const Home = ({}) => {
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
-                <div className="logo" />
+                <Box px={6} py={4}>
+                    <Text fontSize={'2xl'}>{collapsed ? 'SC' : 'SPContents'}</Text>
+                </Box>
                 <Menu
                     theme="dark"
                     defaultSelectedKeys={defaultSelected}
@@ -56,10 +54,14 @@ const Home = ({}) => {
                     <SubMenu key="sub1" icon={<UserOutlined />} title="User">
                         {/* <Menu.Item key="3">Profile</Menu.Item>
                         <Menu.Item key="4">Settings</Menu.Item> */}
-                        <Menu.Item key="5" onClick={()=> {
-                             localStorage.removeItem('user');
-                             navigate('/login');
-                        }}>Logout</Menu.Item>
+                        <Menu.Item
+                            key="5"
+                            onClick={() => {
+                                localStorage.removeItem('user');
+                                navigate('/login');
+                            }}>
+                            Logout
+                        </Menu.Item>
                     </SubMenu>
                 </Menu>
             </Sider>
@@ -70,7 +72,7 @@ const Home = ({}) => {
                         <Breadcrumb.Item>User</Breadcrumb.Item>
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
                     </Breadcrumb> */}
-                    <Box width={"full"} height={"full"} display={"flex"}>
+                    <Box width={'full'} height={'full'} display={'flex'}>
                         <Outlet />
                     </Box>
                 </Content>

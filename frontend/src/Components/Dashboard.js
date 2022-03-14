@@ -1,10 +1,9 @@
 //@ts-check
-import { Box, Button, Flex, Stack, Text, useBoolean } from '@chakra-ui/react';
+import { Button, Flex, Stack, Text, useBoolean } from '@chakra-ui/react';
 import { List, Tag } from 'antd';
-import Search from 'antd/lib/input/Search';
 import React, { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '..';
-import { deleteAnswer, getAnswers, getQuestions } from '../Services/question-service';
+import { deleteAnswer, getAnswers } from '../Services/question-service';
 import CreateAnswer from './CreateAnswer';
 import CreateQuestion from './CreateQuestion';
 import debounce from 'lodash.debounce';
@@ -16,25 +15,6 @@ import { useNavigate } from 'react-router-dom';
 const { confirm } = Modal;
 
 const bg = '#1f1f1f';
-
-const data = [
-    {
-        title: 'How many smartphone/tablet assets do we have?',
-        cat: 'Inventory'
-    },
-    {
-        title: 'How many of our desktops are running Firefox?',
-        cat: 'Threat Landscape'
-    },
-    {
-        title: 'Which critical assets have users logging in with weak passwords?',
-        cat: 'Vulnerability'
-    },
-    {
-        title: 'Which assets in my enterprise are susceptible to Sambacry?',
-        cat: 'Threat Landscape'
-    }
-];
 
 const Dashboard = () => {
     const { userInfo } = useContext(GlobalContext);
@@ -119,9 +99,6 @@ const Dashboard = () => {
                         }}
                         onChange={debouncedSearch}
                     />
-                    {/* <Button minW={160} onClick={() => navigate('/questions')}>
-                        Answer
-                    </Button> */}
                 </Stack>
             </Flex>
             <Flex w={'full'} flex={1} bg={bg} px={6} py={4}>
@@ -168,7 +145,7 @@ const Dashboard = () => {
                                 <List.Item.Meta
                                     title={
                                         <Stack direction={'row'}>
-                                            <a onClick={() => {}}>{anwserText}</a>
+                                            <Text fontSize={'md'}>{anwserText}</Text>
                                             {isByMe && <Tag color="success">Answered by me</Tag>}
                                         </Stack>
                                     }

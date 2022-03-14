@@ -163,7 +163,7 @@ const Questions = () => {
                                         }}>
                                         {!isAnswered && (
                                             <Button
-                                                variant={'outline'}
+                                                variant={'solid'}
                                                 onClick={() => {
                                                     setSelectedQuestion(item);
                                                     toggleCreateAnswer.on();

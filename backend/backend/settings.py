@@ -141,8 +141,8 @@ DATABASES = {
     # "default": {
     #     "ENGINE": "mssql",
     #     "NAME": "SecurityContent",
-    #     "USER": "sa",
-    #     "PASSWORD": "141",
+    #     "USER": "sa_user",
+    #     "PASSWORD": "my_password",
     #     "HOST": "localhost",
     #     "PORT": "1433",
     #     "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 

@@ -1,4 +1,5 @@
 import datetime
+from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -8,6 +9,10 @@ class Tenant(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
     upsert_at=models.DateTimeField(default=datetime.datetime.now())
     upsert_by=models.IntegerField(null=True)
+    
+class TenantUserMapping(models.Model):
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     
 class Category(models.Model):
     category=models.CharField(max_length=300, null=False)
@@ -20,7 +25,7 @@ class Category(models.Model):
 class Question(models.Model):
     text=models.CharField(max_length=300, null=False)
     category=models.ForeignKey(Category, models.CASCADE)
-    tenant=models.ForeignKey(Tenant, default=1,on_delete= models.CASCADE)
+    tenant=models.ForeignKey(Tenant, null=True, blank=True,on_delete= models.CASCADE)
     upsert_at=models.DateTimeField(default=datetime.datetime.now())
     upsert_by=models.IntegerField(null=True)
     

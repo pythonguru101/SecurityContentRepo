@@ -1,30 +1,17 @@
 //@ts-check
 import {
-    Box,
-    FormControl,
-    FormErrorMessage,
-    FormHelperText,
-    FormLabel,
     Modal,
     ModalBody,
     ModalCloseButton,
     ModalContent,
-    ModalFooter,
     ModalHeader,
     ModalOverlay,
     // Button,
-    Stack,
-    Select
-} from '@chakra-ui/react';
-import TextareaAutosize from 'react-textarea-autosize';
-import React, { useEffect, useState } from 'react';
+    Stack} from '@chakra-ui/react';
+import React, { useEffect } from 'react';
 import TextArea from 'antd/lib/input/TextArea';
-import { getCategories } from '../Services/category-service';
-import { createAnswer, createQuestion } from '../Services/question-service';
+import { createAnswer } from '../Services/question-service';
 import { Form, Button } from 'antd';
-// import { Select } from 'antd';
-
-// const { Option } = Select;
 
 const CreateAnswer = ({ onClose, question = null }) => {
     useEffect(() => {}, []);
@@ -90,14 +77,13 @@ const CreateAnswer = ({ onClose, question = null }) => {
                             </Form.Item>
 
                             <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'right' }}>
-                                <Button type="primary" htmlType="submit">
+                                <Button type="primary" htmlType="submit" size='large'>
                                     Create
                                 </Button>
                             </Form.Item>
                         </Form>
                     </Stack>
                 </ModalBody>
-                {/* <ModalFooter pt={8}></ModalFooter> */}
             </ModalContent>
         </Modal>
     );

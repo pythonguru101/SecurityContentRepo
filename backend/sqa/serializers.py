@@ -1,12 +1,18 @@
 from rest_framework import serializers
-from .models import Category,Question,Answer, Tenant
+from .models import Category,Question,Answer, Tenant, TenantUserMapping
 from django.contrib.auth.models import User
-
 
 class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_active')
+    
+class UserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'password')
+        
+     
 class TenantSerializer(serializers.ModelSerializer):
     user = BasicUserSerializer(many=False, read_only=True)
     class Meta:
@@ -16,6 +22,14 @@ class TenantCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
         fields = ('id', 'tenant','user')
+        
+class TenantUserSerializer(serializers.ModelSerializer):
+    user = BasicUserSerializer(many=False)
+    tenant = TenantSerializer(many=False)
+    class Meta:
+        model = TenantUserMapping
+        fields = ('tenant','user')  
+        
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
