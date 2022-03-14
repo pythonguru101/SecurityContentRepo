@@ -1,13 +1,21 @@
 //@ts-check
 import { Box, Center, Divider, Flex, Stack, Text } from '@chakra-ui/react';
 import { Form, Input, Button, Checkbox, Col, Row } from 'antd';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../Services/user-service';
+import { getMyProfile, login } from '../Services/user-service';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { GlobalContext } from '..';
 
 const Login = ({}) => {
     const navigate = useNavigate();
+    const [loginNoMatchText, setLoginNoMatchText] = useState('');
+    const { setUserInfo } = useContext(GlobalContext);
+
+    useEffect(() => {
+        setUserInfo({});
+        localStorage.removeItem('user');
+    }, []);
 
     const handleOnSummit = async (values) => {
         const response = await login(values.username, values.password);
@@ -15,11 +23,22 @@ const Login = ({}) => {
             // setIsLoading(false);
             let responseUser = await response.json();
             localStorage.setItem('user', JSON.stringify(responseUser));
+            const { data: myProfile } = await getMyProfile();
+            var user = {
+                ...myProfile,
+                ...responseUser
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+            setUserInfo(user);
             // updateUserInfo();
             navigate('/');
         } else {
             // setIsLoading(false);
-            // setLoginNoMatch(true);
+            if (response.status == 401) {
+                setLoginNoMatchText("Username or password didn't match");
+            } else {
+                setLoginNoMatchText('Something went wrong communicating with the server');
+            }
         }
     };
 
@@ -31,13 +50,19 @@ const Login = ({}) => {
                         Login
                     </Text>
                     <Divider mb={6} />
+                    {loginNoMatchText && (
+                        <Text textAlign={'center'} color={'red'}>
+                            {loginNoMatchText}
+                        </Text>
+                    )}
                     <Form
-                        style={{width: 600}}
+                        style={{ width: 600 }}
                         name="normal_login"
                         className="login-form"
                         initialValues={{
                             remember: true
                         }}
+                        onChange={() => setLoginNoMatchText('')}
                         onFinish={handleOnSummit}>
                         <Form.Item
                             name="username"
@@ -80,7 +105,6 @@ const Login = ({}) => {
                             <Button type="primary" htmlType="submit" className="login-form-button">
                                 Log in
                             </Button>
-                            Or <a href="">register now!</a>
                         </Form.Item>
                     </Form>
                 </Stack>

@@ -12,7 +12,7 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
-    Button,
+    // Button,
     Stack,
     Select
 } from '@chakra-ui/react';
@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react';
 import TextArea from 'antd/lib/input/TextArea';
 import { getCategories } from '../Services/category-service';
 import { createQuestion } from '../Services/question-service';
+import { Form, Button } from 'antd';
 // import { Select } from 'antd';
 
 // const { Option } = Select;
@@ -42,13 +43,14 @@ const CreateQuestion = ({ onClose }) => {
         } catch (error) {}
     };
 
-    const onCreateQuestion = async () => {
+    const onCreateQuestion = async (values) => {
         try {
             var payload = {
-                text: question,
-                category: selectedCategory
+                text: values.question,
+                category: values.category === 0 ? categories[0].id : values.category,
+                tenant: 2
             };
-            // await createQuestion(payload);
+            await createQuestion(payload);
             onClose();
         } catch (error) {}
     };
@@ -61,52 +63,84 @@ const CreateQuestion = ({ onClose }) => {
                 <ModalCloseButton />
                 <ModalBody pt={4}>
                     <Stack direction={'column'} spacing={4}>
-                        <FormControl>
-                            <FormLabel htmlFor="text">Question</FormLabel>
-                            <TextArea
-                                // value={value}
-                                // onChange={this.onChange}
-                                name={'text'}
-                                showCount
-                                maxLength={120}
-                                placeholder="Enter your question here"
-                                autoSize={{ minRows: 2, maxRows: 3 }}
-                                onChange={(event) => {
-                                    setQuestion(event.target.value);
-                                }}
-                            />
-                            {!false ? (
-                                <FormHelperText>
-                                    Enter a concise but well explained Question
-                                </FormHelperText>
-                            ) : (
-                                <FormErrorMessage>This field is required</FormErrorMessage>
-                            )}
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="category">Category</FormLabel>
-                            <Select
+                        <Form
+                            name="basic"
+                            // labelCol={{ span: 8 }}
+                            // wrapperCol={{ span: 16 }}
+                            layout={'vertical'}
+                            onFinish={onCreateQuestion}
+                            onFinishFailed={() => {}}
+                            initialValues={{
+                                category: categories && categories.length > 0 ? categories[0].id : 0
+                            }}
+                            autoComplete="off">
+                            <Form.Item
+                                label="Question"
+                                name="question"
+                                help="Enter a concise but well explained Question"
+                                rules={[
+                                    {
+                                        required: true,
+                                        min: 6,
+                                        max: 120,
+                                        message: 'Question should be between 5 to 120 character'
+                                    }
+                                ]}
+                                style={{ marginBottom: 12 }}>
+                                {/* <FormLabel htmlFor="question">Question</FormLabel> */}
+                                <TextArea
+                                    // value={value}
+                                    // onChange={this.onChange}
+
+                                    name={'question'}
+                                    showCount
+                                    maxLength={120}
+                                    placeholder="Enter your question here"
+                                    autoSize={{ minRows: 2, maxRows: 3 }}
+                                    // onChange={(event) => {
+                                    //     setQuestion(event.target.value);
+                                    // }}
+                                />
+                                {/* {!false ? (
+                                    <FormHelperText>
+                                        Enter a concise but well explained Question
+                                    </FormHelperText>
+                                ) : (
+                                    <FormErrorMessage>This field is required</FormErrorMessage>
+                                )} */}
+                            </Form.Item>
+                            <Form.Item
+                                label="Category"
                                 name="category"
-                                // defaultValue={selectedCategory}
-                                // style={{ width: 120 }}
-                                // allowClear
-                                // value={selectedCategory}
-                                onChange={(value) => setSelectedCategory(value)}>
-                                {categories.map((cat) => {
-                                    return (
-                                        <option key={cat.id} value={cat.id}>
-                                            {cat.category}
-                                        </option>
-                                    );
-                                })}
-                            </Select>
-                            {!false ? (
-                                <FormHelperText>Select the question category</FormHelperText>
-                            ) : (
-                                <FormErrorMessage>This field is required</FormErrorMessage>
-                            )}
-                        </FormControl>
-                        {/* <FormControl>
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please select a category'
+                                    }
+                                ]}>
+                                <Select
+                                    name="category"
+                                    // defaultValue={selectedCategory}
+                                    // style={{ width: 120 }}
+                                    // allowClear
+                                    // value={selectedCategory}
+                                    // onChange={(value) => setSelectedCategory(value)}
+                                >
+                                    {categories.map((cat) => {
+                                        return (
+                                            <option key={cat.id} value={cat.id}>
+                                                {cat.category}
+                                            </option>
+                                        );
+                                    })}
+                                </Select>
+                                {/* {!false ? (
+                                    <FormHelperText>Select the question category</FormHelperText>
+                                ) : (
+                                    <FormErrorMessage>This field is required</FormErrorMessage>
+                                )} */}
+                            </Form.Item>
+                            {/* <FormControl>
                             <FormLabel htmlFor="email">Answer</FormLabel>
                             <TextArea
                                 // value={value}
@@ -124,13 +158,15 @@ const CreateQuestion = ({ onClose }) => {
                                 <FormErrorMessage>This field is required</FormErrorMessage>
                             )}
                         </FormControl> */}
+                            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'right' }}>
+                                <Button type="primary" htmlType="submit">
+                                    Create
+                                </Button>
+                            </Form.Item>
+                        </Form>
                     </Stack>
                 </ModalBody>
-                <ModalFooter pt={8}>
-                    <Button minW={120} onClick={onCreateQuestion}>
-                        Create
-                    </Button>
-                </ModalFooter>
+                {/* <ModalFooter pt={8}></ModalFooter> */}
             </ModalContent>
         </Modal>
     );

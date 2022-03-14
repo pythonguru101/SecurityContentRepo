@@ -2,14 +2,16 @@
 import { Box, Button, Flex, Stack, Text, useBoolean } from '@chakra-ui/react';
 import { List, Tag } from 'antd';
 import Search from 'antd/lib/input/Search';
-import React, { useEffect, useState } from 'react';
-import { deleteQuestion, getAnswers, getQuestions } from '../Services/question-service';
-import SearchCustom from './Common/SearchCustom';
+import React, { useContext, useEffect, useState } from 'react';
+import { GlobalContext } from '..';
+import { deleteAnswer, getAnswers, getQuestions } from '../Services/question-service';
 import CreateAnswer from './CreateAnswer';
 import CreateQuestion from './CreateQuestion';
 import debounce from 'lodash.debounce';
 import { Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import SearchCustom from './Common/SearchCustom';
+import { useNavigate } from 'react-router-dom';
 
 const { confirm } = Modal;
 
@@ -34,10 +36,11 @@ const data = [
     }
 ];
 
-const Questions = () => {
+const Dashboard = () => {
+    const { userInfo } = useContext(GlobalContext);
+    const navigate = useNavigate();
     const [showCreateQuestion, toggleCreateQuestion] = useBoolean();
     const [showCreateAnswer, toggleCreateAnswer] = useBoolean();
-    const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -48,23 +51,11 @@ const Questions = () => {
     }, []);
 
     const onFetch = async (search = '') => {
-        onFetchAnswers();
-        onFetchQs(search);
-    };
-
-    const onFetchAnswers = async () => {
-        try {
-            const { data: answers } = await getAnswers();
-            setAnswers(answers || []);
-        } catch (error) {}
-    };
-
-    const onFetchQs = async (search = '') => {
         try {
             setIsLoading(true);
-            setSearchText(search);
-            const { data: questions } = await getQuestions(search);
-            setQuestions(questions || []);
+            setSearchText(search)
+            const { data: answers } = await getAnswers(search);
+            setAnswers(answers);
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
@@ -72,13 +63,13 @@ const Questions = () => {
     };
 
     const debouncedSearch = debounce(async (value) => {
-        await onFetchQs(value);
+        await onFetch(value);
     }, 300);
 
     const onDelete = async (id) => {
         try {
-            await deleteQuestion(id);
-            await onFetchQs(searchText);
+            await deleteAnswer(id);
+            await onFetch();
         } catch (error) {}
     };
 
@@ -102,16 +93,13 @@ const Questions = () => {
                 <CreateQuestion
                     onClose={() => {
                         toggleCreateQuestion.off();
-                        onFetch(searchText);
+                        onFetch();
                     }}
                 />
             )}
             {showCreateAnswer && (
                 <CreateAnswer
-                    onClose={() => {
-                        toggleCreateAnswer.off();
-                        onFetch(searchText);
-                    }}
+                    onClose={() => toggleCreateAnswer.off()}
                     question={selectedQuestion}
                 />
             )}
@@ -123,54 +111,52 @@ const Questions = () => {
                 px={6}
                 py={4}
                 mb={4}>
-                <Text fontSize={'2xl'}>Questions</Text>
+                <Text fontSize={'2xl'}>Answers</Text>
                 <Stack direction={'row'} alignItems={'center'} spacing={6}>
                     <SearchCustom
                         onSearch={(value) => {
-                            onFetchQs(value);
+                            onFetch(value);
                         }}
                         onChange={debouncedSearch}
                     />
-                    <Button minW={160} onClick={() => toggleCreateQuestion.on()}>
-                        Create Question
-                    </Button>
+                    {/* <Button minW={160} onClick={() => navigate('/questions')}>
+                        Answer
+                    </Button> */}
                 </Stack>
             </Flex>
             <Flex w={'full'} flex={1} bg={bg} px={6} py={4}>
                 <List
                     style={{ width: '100%' }}
+                    itemLayout="vertical"
+                    dataSource={answers}
+                    loading={isLoading}
                     header={
                         searchText ? (
                             <Text fontSize={'xl'}>{`Showing results for "${searchText}"`}</Text>
                         ) : null
                     }
-                    itemLayout="vertical"
-                    dataSource={questions}
-                    loading={isLoading}
                     renderItem={(item) => {
-                        const isAnswered = answers.some((x) => x.question.id === item.id);
+                        const {
+                            question,
+                            question: { category },
+                            answer,
+                            replied_by
+                        } = item;
+                        const anwserText = `Ans. ${answer}`;
+                        const questionText = `Q. ${question.text}`;
+                        var isByMe = replied_by.id === userInfo.id;
                         return (
                             <List.Item
                                 className="question-row"
                                 extra={
                                     <Stack
                                         direction={'row'}
-                                        visibility={'hidden'}
+                                        display={'none'}
                                         sx={{
                                             '.question-row:hover &': {
-                                                visibility: 'visible'
+                                                display: 'flex'
                                             }
                                         }}>
-                                        {!isAnswered && (
-                                            <Button
-                                                variant={'outline'}
-                                                onClick={() => {
-                                                    setSelectedQuestion(item);
-                                                    toggleCreateAnswer.on();
-                                                }}>
-                                                Answer
-                                            </Button>
-                                        )}
                                         <Button
                                             variant={'outline'}
                                             colorScheme={'red'}
@@ -182,19 +168,12 @@ const Questions = () => {
                                 <List.Item.Meta
                                     title={
                                         <Stack direction={'row'}>
-                                            <a
-                                                onClick={() => {
-                                                    if (isAnswered) return;
-                                                    setSelectedQuestion(item);
-                                                    toggleCreateAnswer.on();
-                                                }}>
-                                                {item.text}
-                                            </a>
-                                            {isAnswered && <Tag color="success">Answered</Tag>}
+                                            <a onClick={() => {}}>{anwserText}</a>
+                                            {isByMe && <Tag color="success">Answered by me</Tag>}
                                         </Stack>
                                     }
-                                    description={item.category.category}
-                                />
+                                    description={`by: ${replied_by.first_name} ${replied_by.last_name} | ${category.category}`}></List.Item.Meta>
+                                {questionText}
                             </List.Item>
                         );
                     }}
@@ -204,4 +183,4 @@ const Questions = () => {
     );
 };
 
-export default Questions;
+export default Dashboard;

@@ -10,6 +10,9 @@ export const login = async (username, password) => {
             password: password
         })
     };
-    return await fetch(`/api/token/`, requestOptions);
+    return await fetch(`/api/token`, requestOptions);
 };
 
+export const getMyProfile = async () => {
+    return await axios.get(`/api/me`);
+};

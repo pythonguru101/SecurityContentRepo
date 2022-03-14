@@ -1,18 +1,12 @@
 //@ts-check
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout, Menu } from 'antd';
 import {
-    DesktopOutlined,
     HomeOutlined,
-    FileOutlined,
-    TeamOutlined,
     UserOutlined,
     QuestionCircleOutlined
 } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
-import { Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { PrivateRoute } from './Common/PrivateRoute';
-import Questions from './Questions';
-import Answers from './Answers';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -60,8 +54,8 @@ const Home = ({}) => {
                         Questions
                     </Menu.Item>
                     <SubMenu key="sub1" icon={<UserOutlined />} title="User">
-                        <Menu.Item key="3">Profile</Menu.Item>
-                        <Menu.Item key="4">Settings</Menu.Item>
+                        {/* <Menu.Item key="3">Profile</Menu.Item>
+                        <Menu.Item key="4">Settings</Menu.Item> */}
                         <Menu.Item key="5" onClick={()=> {
                              localStorage.removeItem('user');
                              navigate('/login');
